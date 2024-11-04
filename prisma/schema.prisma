@@ -1,0 +1,265 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model user {    
+  id              Int               @unique @id @default(autoincrement())
+  
+  email    String   @unique
+  name     String
+  password String
+  blocked  Boolean  @default(true)
+  photo    String   @default("")
+  tel      String   @default("")
+  waitTime     Int      @default(0)
+
+  canvas       canvas[]
+  culturalCode culturalCode[]
+  indicators   indicators[]
+  cronograma   Cronograma[]
+  useful       Useful[] 
+
+  dre         dre[]
+  // dreBudget         dreBudget?
+  // dreAccomplished   dreAccomplished?
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model dre {
+  id                  Int      @default(autoincrement())   @unique   @id   
+
+  grossRevenue        Float    @default(0.00) 
+  tax                 Float    @default(0.00) 
+  cost                Float    @default(0.00) 
+  expenses            Float    @default(0.00)
+  reinvestments       Float    @default(0.00) 
+  personalExpenses    Float    @default(0.00) 
+
+  mode                String   @default("budget")
+  
+  user                user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId              Int       
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// model dreAccomplished {
+//   id                     Int       @unique          @id   @default(autoincrement())
+
+//   grossRevenue        Float   @default(0.00) 
+//   tax                 Float   @default(0.00) 
+//   cost                Float   @default(0.00) 
+//   expenses            Float   @default(0.00)
+//   reinvestments       Float   @default(0.00) 
+//   personalExpenses    Float   @default(0.00) 
+
+  
+//   user                   user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   userId                 Int       @unique
+
+//   createdAt              DateTime  @default(now())
+//   updatedAt              DateTime  @updatedAt
+// }
+
+
+model indicators {
+  id                     Int       @unique          @id   @default(autoincrement())
+  
+  date                   String
+
+  invoicing              Float     @default(0.00)                                                       // Faturamento  
+  customersServed        Float     @default(0.00)                                                       // clientes atendidos
+  averageTicket          Float     @default(0.00)                                                       // Ticket médio
+  averageCost            Float     @default(0.00)                                                       // Custo Médio
+  budgetedVsRealized     Float     @default(0.00)                                                       // Orçado vs Realizado
+  actionPlan             Float     @default(0.00)                                                       // Plano de ação
+  productivity           Float     @default(0.00)                                                         // Produtividade
+  customerSatisfaction   Float     @default(0.00)                                                       // satisfação do cliente CAC
+  timeline               Float     @default(0.00)                                                       // cronograma
+  nps                    Float     @default(0.00)                                                       // nps
+  customerEngagement     Float     @default(0.00)                                                       // Engajamento do cliente
+  employeeSatisfaction   Float     @default(0.00)                                                       // Satisfação do colaborador
+  employeeEngagement     Float     @default(0.00)                                                       // Engajamento do Colaborador
+
+  user                   user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                 Int
+
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+}
+
+model canvas {
+  id                  Int       @unique @id     @default(autoincrement())
+
+  label               String                    @default("")   
+  
+  frameDescription    String                    @default("")
+  responsible         String                    @default("")
+
+  keyPartners         String                    @default("")
+  keyActivities       String                    @default("")
+  costStructure       String                    @default("")
+  valueOfeer          String                    @default("")
+  customerRelations   String                    @default("")
+  channels            String                    @default("")
+  sourcesOfIncone     String                    @default("")
+  customerSegments    String                    @default("")
+  keyFeatures         String                    @default("")
+
+  user                 user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId               Int
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+
+model culturalCode {
+  id                  Int       @unique @id     @default(autoincrement())
+
+  label               String                    
+
+  description         String    @db.LongText()      
+
+  files               filesCulturalCode[]
+  
+  user                 user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId               Int
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+
+model filesCulturalCode {
+  id                  Int       @unique @id     @default(autoincrement())
+
+  size                String
+  filename            String
+  path                String
+  type                String
+
+  filesCulturalCode   culturalCode     @relation(fields: [filesCulturalCodeId], references: [id], onDelete: Cascade)
+  filesCulturalCodeId Int
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([filesCulturalCodeId])
+}
+
+
+
+
+
+model files {
+  id                  Int      @unique   @id     @default(autoincrement())
+
+  size                Int      @default(-1)
+  filename            String   @default("")
+  path                String   @default("")
+  type                String   @default("")
+
+  calendar            Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+  calendarId          Int  
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+
+
+
+
+
+
+model Cronograma {
+  id                  Int      @unique   @id     @default(autoincrement())
+
+  label               String
+
+  calendar            Calendar[]
+  kanban              Kanban?
+
+  user                 user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId               Int
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+
+model Calendar {
+  id                  Int       @unique @id     @default(autoincrement())
+                                                                                                                                      
+  date                String    @default("")
+  text                String    @db.LongText
+  hours               String    @default("")
+  status              String    @default("")
+  statusKanban        String    @default("")
+  responsible         String    @default("")
+  label               String    @default("")
+
+  everyDay            Boolean @default(false)
+
+  files               files[]
+
+  cronograma          Cronograma      @relation(fields: [cronogramaId], references: [id], onDelete: Cascade)
+  cronogramaId        Int
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([cronogramaId])
+}
+
+model Kanban {
+  id                  Int       @unique @id     @default(autoincrement())
+
+  label               String
+
+  cronograma          Cronograma      @relation(fields: [cronogramaId], references: [id], onDelete: Cascade)
+  cronogramaId        Int @unique
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([cronogramaId])
+}
+
+
+
+
+
+model Useful {
+  id                  Int      @unique   @id     @default(autoincrement())
+
+  label               String
+  link                String
+
+  user                 user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId               Int
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([userId])
+}

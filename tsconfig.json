@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "target": "es2018",
+    "lib": ["es2018", "dom"],
+    "sourceMap": true,
+    "outDir": "./build",
+    "rootDir": "./src",
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@configs/*": ["./src/api/configs/*"],
+      "@controller/*": ["./src/api/controller/*"],
+      "@router/*": ["./src/api/router/*"],
+      "@middleware/*": ["./src/api/middleware/*"],
+      "@db/*": ["./src/api/db/*"],
+      "@services/*": ["./src/api/services/*"],
+      "@repositories/*": ["./src/api/repositories/*"],
+    }
+  },
+  "exclude": ["node_modules"],
+  "include": ["src"]
+}
